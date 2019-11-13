@@ -120,4 +120,4 @@ target/
 # End of https://www.gitignore.io/api/java,java-web,intellij+all
 
 # Do not include resouces with credentials data
-src/main/resources/
+src/main/resources/app.properties

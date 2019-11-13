@@ -16,44 +16,40 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class Main {
-    private static String faceBookUrl = "https://facebook.com";
+    private final static String faceBookUrl = "https://facebook.com";
     private static ChromeDriver chromeDriver;
-    private static String email;
-    private static String password;
-    private static String link;
-    private static boolean seeMagic;
+    private static AppConfig appConfig;
 
-    static {
-        readPropertyFile();
+    public static void main(String[] args) throws Exception {
+        appConfig = readPropertyFile();
         chromeDriver = prepareDriver();
-    }
 
-
-    public static void main(String[] args) throws InterruptedException {
-        chromeDriver.get(faceBookUrl);
-        login(email, password);
-        goToPost(link);
+        login(appConfig.getEmail(), appConfig.getPassword());
+        goToPost(appConfig.getLink());
         closePopUpWindows();
         openSharesList();
         scrollPageDown();
         Thread.sleep(2000);
-        fetchUsersList().forEach(System.out::println);
+        List<UserDescription> userDescriptions = fetchUsersList();
+        System.out.println("Length of list: " + userDescriptions.size());
+        userDescriptions.forEach(System.out::println);
         chromeDriver.close();
     }
 
     private static ChromeDriver prepareDriver() {
-        System.setProperty("webdriver.chrome.driver", "C:\\chrome_driver\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", appConfig.getDriverLocation());
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("profile.default_content_setting_values.notifications", 2);
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", prefs);
-        if (!seeMagic) {
+        if (!appConfig.isSeeMagic()) {
             options.addArguments("--headless");
         }
         return new ChromeDriver(options);
     }
 
     private static void login(String email, String password) {
+        chromeDriver.get(faceBookUrl);
         WebElement passwordField;
         WebElement loginBtn;
 
@@ -86,18 +82,31 @@ public class Main {
                 .click();
     }
 
-    private static void scrollPageDown() {
-        // ToDo
+    private static void scrollPageDown() throws InterruptedException {
+        int currentScrollHeight = 0;
+        int scrollStep = 100;
+        while (true) {
+            currentScrollHeight += scrollStep;
+            String scrollBefore = chromeDriver.executeScript("return window.pageYOffset;").toString();
+            chromeDriver.executeScript("window.scrollTo(0, " + currentScrollHeight + ")");
+            Thread.sleep(500);
+            String scrollAfter = chromeDriver.executeScript("return window.pageYOffset;").toString();
+            if (scrollBefore.equals(scrollAfter)) {
+                break;
+            }
+        }
     }
 
     private static void closePopUpWindows() {
-        try {
-            Thread.sleep(2000);
-            WebElement element = chromeDriver.findElement(By.cssSelector("a[class='_xlt _418x']"));
-            element.click();
-            Thread.sleep(1000);
-        } catch (NoSuchElementException | InterruptedException e) {
-            // Everything is good here
+        while (true) {
+            try {
+                Thread.sleep(2000);
+                WebElement element = chromeDriver.findElement(By.cssSelector("a[class='_xlt _418x']"));
+                element.click();
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                break;
+            }
         }
     }
 
@@ -118,17 +127,17 @@ public class Main {
         return url.substring(0, url.indexOf("__tn__=") - 1);
     }
 
-    private static void readPropertyFile() {
-        try (InputStream input = new FileInputStream("src\\main\\resources\\app.properties")) {
-            Properties prop = new Properties();
-            prop.load(input);
+    private static AppConfig readPropertyFile() throws IOException {
+        InputStream input = new FileInputStream("src/main/resources/app.properties");
+        Properties prop = new Properties();
+        prop.load(input);
 
-            email = prop.getProperty("facebook.login");
-            password = prop.getProperty("facebook.password");
-            seeMagic = prop.getProperty("app.see_magic").equals("true");
-            link = prop.getProperty("target.link");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        return AppConfig.builder()
+                .email(prop.getProperty("facebook.login"))
+                .password(prop.getProperty("facebook.password"))
+                .seeMagic(prop.getProperty("app.see_magic").equals("true"))
+                .driverLocation(prop.getProperty("app.driver.location"))
+                .link(prop.getProperty("target.link"))
+                .build();
     }
 }
