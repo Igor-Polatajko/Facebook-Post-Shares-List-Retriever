@@ -27,7 +27,7 @@ public class SharesListRetriever {
         closePopUpWindows();
         openSharesList();
         scrollPageDown();
-        Thread.sleep(2000);
+        Thread.sleep(appConfig.getPause());
         List<UserDescription> fetchedData = fetchUsersList();
         chromeDriver.close();
         return fetchedData;
@@ -39,6 +39,7 @@ public class SharesListRetriever {
         prefs.put("profile.default_content_setting_values.notifications", 2);
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", prefs);
+        options.addArguments("--disable-notifications");
         if (!appConfig.isSeeMagic()) {
             options.addArguments("--headless");
         }
@@ -81,15 +82,16 @@ public class SharesListRetriever {
     }
 
     private void scrollPageDown() throws InterruptedException {
+        Thread.sleep(appConfig.getPause());
         int currentScrollHeight = 0;
-        int scrollStep = 100;
+        int scrollStep = 150;
         String scrollBefore;
         String scrollAfter;
         do {
             currentScrollHeight += scrollStep;
             scrollBefore = chromeDriver.executeScript("return window.pageYOffset;").toString();
             chromeDriver.executeScript("window.scrollTo(0, " + currentScrollHeight + ")");
-            Thread.sleep(500);
+            Thread.sleep(appConfig.getPause() / 10);
             scrollAfter = chromeDriver.executeScript("return window.pageYOffset;").toString();
         } while (!scrollBefore.equals(scrollAfter));
     }
@@ -97,9 +99,9 @@ public class SharesListRetriever {
     private void closePopUpWindows() {
         while (true) {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(appConfig.getPause());
                 chromeDriver.findElement(By.cssSelector("a[class='_xlt _418x']")).click();
-                Thread.sleep(1000);
+                Thread.sleep(appConfig.getPause() / 2);
             } catch (Exception e) {
                 break;
             }

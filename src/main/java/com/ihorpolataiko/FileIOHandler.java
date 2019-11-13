@@ -1,11 +1,6 @@
 package com.ihorpolataiko;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Properties;
 
@@ -20,6 +15,7 @@ public class FileIOHandler {
                 .password(prop.getProperty("facebook.password"))
                 .seeMagic(prop.getProperty("app.see_magic").equals("true"))
                 .driverLocation(prop.getProperty("app.driver.location"))
+                .pause(Long.parseLong(prop.getProperty("app.pause")))
                 .link(prop.getProperty("target.link"))
                 .outputFileLocation(prop.getProperty("output.file.location"))
                 .build();

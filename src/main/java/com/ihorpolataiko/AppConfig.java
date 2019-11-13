@@ -12,6 +12,7 @@ public class AppConfig {
     private String password;
     private String link;
     private String driverLocation;
+    private Long pause;
     private boolean seeMagic;
     private String outputFileLocation;
 }
