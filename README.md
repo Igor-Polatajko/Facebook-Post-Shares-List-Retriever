@@ -6,7 +6,7 @@ App that retrieves list of people that shared some post on Facebook.
   <li>Download Chrome webdriver according to your Chrome browser version</li>
   <li>Rename file app_sample.properties to app.properties and fill it with relevant data</li>
   <li>Build app with maven <code>mvn clean install</code></li>
-  <li>Start the application</li>
+  <li>Start the application <code>java -Dfile.encoding=UTF-8 *Main class* *properties file location*</code></li>
 </ul>
 
 ## Note

@@ -5,8 +5,15 @@ import java.util.List;
 import java.util.Properties;
 
 public class FileIOHandler {
-    public static AppConfig readPropertyFile() throws IOException {
-        InputStream input = new FileInputStream("src/main/resources/app.properties");
+    private final String propertiesLocation;
+
+    public FileIOHandler(String propertiesLocation) {
+        this.propertiesLocation = propertiesLocation;
+    }
+
+    public AppConfig readPropertyFile() throws IOException {
+        InputStream input;
+        input = new FileInputStream(propertiesLocation);
         Properties prop = new Properties();
         prop.load(input);
 
@@ -21,9 +28,9 @@ public class FileIOHandler {
                 .build();
     }
 
-    public static void saveToCsv(List<UserDescription> userDescriptions, String filePath) {
+    public void saveToCsv(List<UserDescription> userDescriptions, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(
-                new File(filePath + "/peopleWhoHasSharedThePost.txt")))) {
+                filePath + "/peopleWhoHasSharedThePost.txt"))) {
             for (UserDescription userDescription : userDescriptions) {
                 writer.write("\"" + userDescription.getTitle() + "\",\"" + userDescription.getLink() + "\"\n\r");
             }
