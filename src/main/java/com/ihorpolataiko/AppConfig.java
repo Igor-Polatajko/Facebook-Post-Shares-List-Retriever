@@ -13,4 +13,5 @@ public class AppConfig {
     private String link;
     private String driverLocation;
     private boolean seeMagic;
+    private String outputFileLocation;
 }
