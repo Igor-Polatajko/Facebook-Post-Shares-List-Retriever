@@ -47,6 +47,7 @@ public class SharesListRetriever {
 
     private void login(String email, String password) {
         chromeDriver.get(faceBookUrl);
+
         WebElement passwordField;
         WebElement loginBtn;
 
@@ -82,24 +83,22 @@ public class SharesListRetriever {
     private void scrollPageDown() throws InterruptedException {
         int currentScrollHeight = 0;
         int scrollStep = 100;
-        while (true) {
+        String scrollBefore;
+        String scrollAfter;
+        do {
             currentScrollHeight += scrollStep;
-            String scrollBefore = chromeDriver.executeScript("return window.pageYOffset;").toString();
+            scrollBefore = chromeDriver.executeScript("return window.pageYOffset;").toString();
             chromeDriver.executeScript("window.scrollTo(0, " + currentScrollHeight + ")");
             Thread.sleep(500);
-            String scrollAfter = chromeDriver.executeScript("return window.pageYOffset;").toString();
-            if (scrollBefore.equals(scrollAfter)) {
-                break;
-            }
-        }
+            scrollAfter = chromeDriver.executeScript("return window.pageYOffset;").toString();
+        } while (!scrollBefore.equals(scrollAfter));
     }
 
     private void closePopUpWindows() {
         while (true) {
             try {
                 Thread.sleep(2000);
-                WebElement element = chromeDriver.findElement(By.cssSelector("a[class='_xlt _418x']"));
-                element.click();
+                chromeDriver.findElement(By.cssSelector("a[class='_xlt _418x']")).click();
                 Thread.sleep(1000);
             } catch (Exception e) {
                 break;
