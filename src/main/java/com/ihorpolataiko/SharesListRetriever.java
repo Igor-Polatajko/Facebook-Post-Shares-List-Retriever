@@ -77,11 +77,16 @@ public class SharesListRetriever {
         while (true) {
             try {
                 Thread.sleep(appConfig.getPause());
-                chromeDriver.findElements(By.cssSelector("a[class='_3rwx _42ft']"))
+                WebElement element = chromeDriver.findElements(By.cssSelector("a[class='_3rwx _42ft']"))
                         .stream()
                         .findFirst()
-                        .get()
-                        .click();
+                        .get();
+
+                Thread.sleep(appConfig.getPause() / 2);
+                chromeDriver.executeScript("arguments[0].scrollIntoView(false);", element);
+                Thread.sleep(appConfig.getPause() / 2);
+                element.click();
+                Thread.sleep(appConfig.getPause());
                 return;
             } catch (ElementNotVisibleException e) {
                 closePopUpWindows();
