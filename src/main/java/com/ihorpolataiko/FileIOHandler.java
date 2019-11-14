@@ -32,7 +32,8 @@ public class FileIOHandler {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(
                 filePath + "/peopleWhoHasSharedThePost.txt"))) {
             for (UserDescription userDescription : userDescriptions) {
-                writer.write("\"" + userDescription.getTitle() + "\",\"" + userDescription.getLink() + "\"\n\r");
+                writer.write("\"" + userDescription.getTitle() + "\",\"" + userDescription.getLink() + "\"");
+                writer.newLine();
             }
         } catch (IOException e) {
             System.out.println("Some errors while saving data to file...");

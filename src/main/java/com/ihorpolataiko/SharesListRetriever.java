@@ -1,8 +1,8 @@
 package com.ihorpolataiko;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -90,7 +90,7 @@ public class SharesListRetriever {
                 element.click();
                 Thread.sleep(appConfig.getPause());
                 return;
-            } catch (ElementNotVisibleException e) {
+            } catch (WebDriverException e) {
                 closePopUpWindows();
                 closeNotificationWindows();
                 Thread.sleep(appConfig.getPause());
@@ -147,6 +147,7 @@ public class SharesListRetriever {
                         .title(webElement.getAttribute("title"))
                         .link(removeRedundantParamsFromUrl(webElement.getAttribute("href")))
                         .build())
+                .filter(userDescription -> !userDescription.getTitle().matches("\\s*"))
                 .collect(Collectors.toList());
     }
 
