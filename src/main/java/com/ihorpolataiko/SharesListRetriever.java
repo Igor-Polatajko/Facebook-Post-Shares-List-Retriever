@@ -1,6 +1,7 @@
 package com.ihorpolataiko;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -24,7 +25,6 @@ public class SharesListRetriever {
     public List<UserDescription> retrieveList() throws InterruptedException {
         login(appConfig.getEmail(), appConfig.getPassword());
         goToPost(appConfig.getLink());
-        closePopUpWindows();
         openSharesList();
         scrollPageDown();
         Thread.sleep(appConfig.getPause());
@@ -73,12 +73,22 @@ public class SharesListRetriever {
         chromeDriver.get(link);
     }
 
-    private void openSharesList() {
-        chromeDriver.findElements(By.cssSelector("a[class='_3rwx _42ft']"))
-                .stream()
-                .findFirst()
-                .get()
-                .click();
+    private void openSharesList() throws InterruptedException {
+        while (true) {
+            try {
+                Thread.sleep(appConfig.getPause());
+                chromeDriver.findElements(By.cssSelector("a[class='_3rwx _42ft']"))
+                        .stream()
+                        .findFirst()
+                        .get()
+                        .click();
+                return;
+            } catch (ElementNotVisibleException e) {
+                closePopUpWindows();
+                closeNotificationWindows();
+                Thread.sleep(appConfig.getPause());
+            }
+        }
     }
 
     private void scrollPageDown() throws InterruptedException {
@@ -101,6 +111,18 @@ public class SharesListRetriever {
             try {
                 Thread.sleep(appConfig.getPause());
                 chromeDriver.findElement(By.cssSelector("a[class='_xlt _418x']")).click();
+                Thread.sleep(appConfig.getPause() / 2);
+            } catch (Exception e) {
+                break;
+            }
+        }
+    }
+
+    private void closeNotificationWindows() {
+        while (true) {
+            try {
+                Thread.sleep(appConfig.getPause());
+                chromeDriver.findElement(By.cssSelector("div[class='_n8 _3qx uiLayer _3qw']")).click();
                 Thread.sleep(appConfig.getPause() / 2);
             } catch (Exception e) {
                 break;
