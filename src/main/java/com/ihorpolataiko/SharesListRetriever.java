@@ -28,7 +28,9 @@ public class SharesListRetriever {
         openSharesList();
         scrollPageDown();
         Thread.sleep(appConfig.getPause());
-        List<UserDescription> fetchedData = fetchUsersList();
+        List<UserDescription> fetchedData = fetchUsersList().stream()
+                .distinct()
+                .collect(Collectors.toList());
         chromeDriver.close();
         return fetchedData;
     }
